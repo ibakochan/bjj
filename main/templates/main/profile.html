@@ -1,0 +1,210 @@
+{% extends 'outlay.html' %}
+{% load static %}
+{% load my_tags %}
+
+<head>
+    <title>Profile</title>
+</head>
+
+{% block page_title %}
+{{ user}}さん
+{% endblock %}
+
+    <!--
+    This website uses an MIT-licensed template.
+    License information is available in the "license/license.text" file.
+    -->
+
+{% block body %}
+<section class="section about-section gray-bg" id="about">
+    <div id="scroll-target" class="container">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="about-text go-to">
+                            <h3 class="dark-color">{{ user }}</h3>
+                            <h6 class="theme-color lead">Participation records and information</h6>
+                            <div class="row about-list">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                        <div class="about-avatar">
+                            <img style="width:240px;height:240px;margin-top: 8px; border:3px solid black;" {% if request.user.is_superuser %}src="{% url 'main:profile_picture' user.id %}"{% else %}src="{% static 'main/32fb4d73a44991984a007252e99f93c7.jpg' %}"{% endif %}>
+                        </div>
+                </div>
+                <div class="counter">
+                    <div class="row">
+                        <div class="col-6 col-lg-3">
+                            <div class="count-data text-center">
+                                <h6 class="count h2" data-to="500" data-speed="500">{{ user }}</h6>
+                                <p class="m-0px font-w-600">Member name</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="count-data text-center">
+                                <h6 class="count h2" data-to="150" data-speed="150">
+                                {% if user.belt == "White" %}
+                                    {% white_jiu_jitsu_message user.id %}
+                                {% elif user.belt == "Blue" %}
+                                    {% blue_jiu_jitsu_message user.id %}
+                                {% elif user.belt == "Purple" %}
+                                    {% purple_jiu_jitsu_message user.id %}
+                                {% elif user.belt == "Brown" %}
+                                    {% brown_jiu_jitsu_message user.id %}
+                                {% endif %}
+                                {% if user.belt == "White" %}
+                                    {% white_jiu_jitsu_participation_count user.id %}
+                                {% elif user.belt == "Blue" %}
+                                    {% blue_jiu_jitsu_participation_count user.id %}
+                                {% elif user.belt == "Purple" %}
+                                    {% purple_jiu_jitsu_participation_count user.id %}
+                                {% elif user.belt == "Brown" %}
+                                    {% brown_jiu_jitsu_participation_count user.id %}
+                                {% elif user.belt == "Black" %}
+                                    {% black_jiu_jitsu_participation_count user.id %}
+                                {% endif %}
+                                </h6>
+                                <p class="m-0px font-w-600">{{ user.belt }} Participations</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="count-data text-center">
+                                <h6 class="count h2" data-to="850" data-speed="850">{% jiu_jitsu_monthly_count user.id %}</h6>
+                                <p class="m-0px font-w-600">This month participation</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="count-data text-center">
+                                <h6 class="count h2" data-to="190" data-speed="190">{% total_jiu_jitsu_participation_count user.id %}</h6>
+                                <p class="m-0px font-w-600">Total participation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="counter">
+                    <div class="row">
+                        <div class="col-6 col-lg-3">
+                            <div class="count-data text-center">
+                                <h6 class="count h2" data-to="500" data-speed="500">{{ user.belt }}</h6>
+                                <p class="m-0px font-w-600">Belt</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="count-data text-center">
+                                <h6 class="count h2" data-to="150" data-speed="150">{{ user.stripes }}</h6>
+                                <p class="m-0px font-w-600">Stripes</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="count-data text-center">
+                                <h6 class="count h2" data-to="850" data-speed="850">{{ user.member_type }}</h6>
+                                <p class="m-0px font-w-600">Member type</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="count-data text-center">
+                                <h6 class="count h2" data-to="190" data-speed="190">{{ user.gym_choice }}</h6>
+                                <p class="m-0px font-w-600">School</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form method="post" action="{% url 'main:participation_count' user.id %}">
+            {% csrf_token %}
+            {{ participation_count_form.as_p }}
+            <button type="submit" class="btn btn-success border border-dark">Manually change participations for each belt color</button>
+            </form>
+            <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ user_preferences_form.as_p }}
+            {% if form.errors %}
+              <div class="alert alert-danger">
+              <strong>Error:</strong>
+              <span class="text-danger">{{ form.errors.profile_picture.0 }}</span>
+              </div>
+            {% endif %}
+            <button type="submit" class="btn btn-success border border-dark">Update basic user information</button>
+            </form>
+        </section>
+
+
+        {% if request.user.is_superuser %}
+        <ul>
+            {% regroup users by belt as users_by_belt %}
+            {% for belt_group in users_by_belt|dictsort:"grouper" %}
+            {% for u in belt_group.list %}
+            <li>
+            <div style="display: flex; align-items: center;">
+            <a href="{% url 'main:profile' user_id=u.id %}" style="text-decoration: none;">
+            <span style="margin-right: 20px; color:
+    {% if u.belt == 'White' %} white; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+    {% elif u.belt == 'Blue' %} blue; font-weight: bold;
+    {% elif u.belt == 'Purple' %} purple; font-weight: bold;
+    {% elif u.belt == 'Brown' %} brown; font-weight: bold;
+    {% elif u.belt == 'Black' %} black; font-weight: bold;
+    {% else %} default_color; {% endif %}">
+                <img style="width:64px;height:64px;margin-top: 8px; border:3px solid black;" {% if request.user.is_superuser %}src="{% url 'main:profile_picture' u.id %}"{% else %}src="{% static 'main/32fb4d73a44991984a007252e99f93c7.jpg' %}"{% endif %}>
+                <span>{{ u.username }} (Belt：{{ u.belt }}) (Stripes：{{ u.stripes }}) (Member type：{{ u.member_type }}) (School：{{ u.gym_choice }})
+                </span>
+            (This month participation：{% jiu_jitsu_monthly_count u.id %})
+            </span>
+            </a>
+            <div>
+                <button class="btn btn-danger btn-rounded border border-dark" data-bs-toggle="modal" data-bs-target="#confirmDeleteAccountModal{{ u.id }}">Delete account</button>
+
+                <!-- Confirmation Modal for Account Deletion -->
+                <div class="modal fade" id="confirmDeleteAccountModal{{ u.id }}" tabindex="-1" aria-labelledby="confirmDeleteAccountModalLabel{{ u.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmDeleteAccountModalLabel{{ u.id }}">Delete confirmation</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Do you really want to delete this account?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancle</button>
+                                <form action="{% url 'main:delete_account' pk=u.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="submit" class="btn btn-danger" value="Delete">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+            </li>
+            {% endfor %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+  {% if request.user.is_superuser %}
+  <p>Current number of members: {% get_customuser_count %}</p>
+  <h2>Set limit to number of member accounts</h2>
+  <p>Member limit：{% user_limit %}</p>
+  <form method="post" action="{% url 'main:set_user_limit' %}">
+    {% csrf_token %}
+    <label for="user_limit">Member limit:</label>
+    <input type="number" id="user_limit" name="user_limit" required>
+    <button type="submit">Set the limit</button>
+  </form>
+  {% endif %}
+  <p></p>
+  {% if request.user.is_superuser %}
+  <form method="get" action="{% url 'main:reset_monthly_counts' %}">
+    <button type="submit" class="btn btn-danger btn-rounded border border-dark">Reset all monthly participation counts for all users</button>
+  </form>
+  {% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous" defer></script>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="{% static 'main/scroll.js' %}"></script>
+{% endblock %}

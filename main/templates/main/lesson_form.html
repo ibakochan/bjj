@@ -1,0 +1,26 @@
+{% extends 'outlay.html' %}
+{% load static %}
+<head>
+    <title>Lesson create form</title>
+</head>
+
+{% block body%}
+<body>
+    <h1>Create Lesson</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if request.user.is_superuser %}
+        <button type="submit" class="btn btn-success border border-dark">Save Lesson</button>
+        {% endif %}
+    </form>
+    <p></p>
+    <p><a href="{% url 'main:lesson_list' %}" class="btn btn-primary border border-dark">Go back to Iwade schedule</a></p>
+    <p><a href="{% url 'main:bjj_lesson_list' %}" class="btn btn-primary border border-dark">Go back to Kix schedule</a></p>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous" defer></script>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="{% static 'main/scroll.js' %}"></script>
+{% endblock %}

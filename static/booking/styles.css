@@ -1,0 +1,9 @@
+/* CSS to remove underlines from links */
+a.lesson-link {
+  text-decoration: none;
+}
+
+/* Optional: Adjust other appearance properties */
+a.lesson-link img {
+  border: none; /* Remove border if present */
+}
