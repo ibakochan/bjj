@@ -105,7 +105,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ivarmain$default',
         'USER': 'ivarmain',
-        'PASSWORD': 'ibaru12345',
+        'PASSWORD': '*****',
         'HOST': 'ivarmain.mysql.pythonanywhere-services.com',
          'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
