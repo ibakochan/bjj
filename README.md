@@ -3,8 +3,8 @@
 This is the first site I ever made. It is a site for managing members of jiu jitsu gyms.
 My jiu jitsu gym has a system where number of attended classes determines the number of stripes they have on their belt.
 The problem was though that taking attendance for this took 10 min after every class since it was done with a paper form.
-Making new papers every year appearantly took many hours as well.
 This site reduced time needed after each class to about 30 seconds.
+Making new papers every year appearantly took many hours as well.
 
 The main pages are:
 The 2 schedules Kix and Iwade lesson lists and the profile page.
